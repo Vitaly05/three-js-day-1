@@ -25,6 +25,8 @@ renderer.setAnimationLoop(animate)
 function animate() {
   EACubeAnimation()
 
+  clippedEACubeAnimation()
+
   renderer.render(scene, camera)
 }
 
@@ -146,3 +148,47 @@ addEventListener('resize', () => {
   renderer.setSize(newWidth, newHeight)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
+
+// Task 9
+
+let clippedEACube
+
+loader.load(
+  '/models/EgorovAgencyCube.gltf',
+  (gltf) => {
+    clippedEACube = gltf.scene
+
+    const clippingPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0)
+
+    clippedEACube.traverse((child) => {
+      if (child.isMesh) {
+        child.material.clippingPlanes = [clippingPlane]
+      }
+    })
+  },
+  undefined,
+  (err) => {
+    console.error(err)
+  }
+)
+
+gui
+  .add({ showTask_9: false }, 'showTask_9')
+  .name('Show task 9')
+  .onChange((isShown) => {
+    if (isShown) {
+      renderer.localClippingEnabled = true
+      camera.position.x = -2
+      scene.add(clippedEACube)
+    } else {
+      renderer.localClippingEnabled = false
+      camera.position.x = 0
+      scene.remove(clippedEACube)
+    }
+  })
+
+function clippedEACubeAnimation() {
+  if (clippedEACube) {
+    clippedEACube.rotation.y += 0.01
+  }
+}
