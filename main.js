@@ -134,3 +134,15 @@ function EACubeAnimation() {
       task6Options.rotationSpeed * task6Options.rotationDirection
   }
 }
+
+// Task 8
+
+addEventListener('resize', () => {
+  const newWidth = window.innerWidth
+  const newHeight = window.innerHeight
+
+  camera.aspect = newWidth / newHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(newWidth, newHeight)
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
