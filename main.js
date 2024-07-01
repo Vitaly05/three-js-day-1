@@ -23,6 +23,8 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setAnimationLoop(animate)
 
 function animate() {
+  EACubeAnimation()
+
   renderer.render(scene, camera)
 }
 
@@ -89,3 +91,46 @@ gui
       scene.remove(ring)
     }
   })
+
+// Task 6
+
+const task6Folder = gui.addFolder('Task 6')
+
+const task6Options = {
+  showTask_6: false,
+  rotationSpeed: 0.03,
+  rotationDirection: 1,
+  toggleAnimation: toggleRotation,
+}
+
+task6Folder
+  .add(task6Options, 'showTask_6')
+  .name('Show task 6')
+  .onChange((isShown) => {
+    if (isShown) {
+      scene.add(egorovAgencyCube.scene)
+    } else {
+      scene.remove(egorovAgencyCube.scene)
+    }
+  })
+
+task6Folder.add(task6Options, 'toggleAnimation').name('Run/Stop rotation')
+
+task6Folder
+  .add(task6Options, 'rotationSpeed', 0.001, 0.1)
+  .name('Rotation speed')
+
+function toggleRotation() {
+  if (task6Options.rotationDirection !== 0) {
+    task6Options.rotationDirection = 0
+  } else {
+    task6Options.rotationDirection = 1
+  }
+}
+
+function EACubeAnimation() {
+  if (egorovAgencyCube && task6Options.showTask_6) {
+    egorovAgencyCube.scene.rotation.y +=
+      task6Options.rotationSpeed * task6Options.rotationDirection
+  }
+}
