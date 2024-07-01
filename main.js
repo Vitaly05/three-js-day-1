@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import GUI from 'lil-gui'
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls'
 
 const gui = new GUI()
 
@@ -26,6 +27,8 @@ function animate() {
   EACubeAnimation()
 
   clippedEACubeAnimation()
+
+  task10Animation()
 
   renderer.render(scene, camera)
 }
@@ -192,3 +195,85 @@ function clippedEACubeAnimation() {
     clippedEACube.rotation.y += 0.01
   }
 }
+
+// Task 10
+
+let task10EACube
+let task10Animations
+let task10Action
+let task10Mixer
+let task10ActionIndex = 0
+
+loader.load(
+  '/models/EgorovAgencyCube.gltf',
+  (gltf) => {
+    task10EACube = gltf.scene
+
+    task10Animations = gltf.animations.reverse()
+    task10Mixer = new THREE.AnimationMixer(task10EACube)
+    task10Mixer.addEventListener('loop', () => {
+      playTask10NextAction()
+    })
+  },
+  undefined,
+  (err) => {
+    console.error(err)
+  }
+)
+
+const task10Folder = gui.addFolder('Task 10')
+
+const task10Options = {
+  showTask_10: false,
+  toggleAnimation: toggleButtonsAnimation,
+  cubeRotateYAngle: 0,
+}
+
+task10Folder
+  .add(task10Options, 'showTask_10')
+  .name('Show task 10')
+  .onChange((isShown) => {
+    if (isShown) {
+      scene.add(task10EACube)
+
+      // Task 11
+      transformControls.attach(task10EACube)
+    } else {
+      scene.remove(task10EACube)
+      // Task 11
+      transformControls.detach(task10EACube)
+    }
+  })
+
+task10Folder.add(task10Options, 'toggleAnimation').name('Start/Stop animation')
+
+function toggleButtonsAnimation() {
+  if (task10Action?.isRunning()) {
+    task10Action.stop()
+  } else {
+    playTask10NextAction()
+  }
+}
+
+function task10Animation() {
+  if (task10Mixer) {
+    task10Mixer.update(0.01)
+  }
+}
+
+function playTask10NextAction() {
+  if (task10Action) {
+    task10Action.stop()
+  }
+  task10Action = task10Mixer.clipAction(task10Animations[task10ActionIndex])
+  task10Action.play()
+
+  task10ActionIndex = (task10ActionIndex + 1) % task10Animations.length
+}
+
+// Task 11
+
+const transformControls = new TransformControls(camera, renderer.domElement)
+transformControls.setMode('rotate')
+transformControls
+scene.add(transformControls)
