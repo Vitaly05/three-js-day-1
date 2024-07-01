@@ -18,7 +18,7 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
 directionalLight.position.set(20, 20, 20)
 scene.add(directionalLight)
 
-const renderer = new THREE.WebGLRenderer()
+const renderer = new THREE.WebGLRenderer({ antialias: true })
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setAnimationLoop(animate)
 
