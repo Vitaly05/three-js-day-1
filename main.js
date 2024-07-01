@@ -336,3 +336,10 @@ function createText(text, letterSpacing, font, startX, color) {
     return text
   })
 }
+
+// Task 1*
+
+scene.background = new THREE.CubeTextureLoader()
+  .setPath('cubemap/')
+  .load(['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'])
+scene.backgroundBlurriness = 0.07
