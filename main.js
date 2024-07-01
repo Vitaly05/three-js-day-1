@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import GUI from 'lil-gui'
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls'
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader'
 
 const gui = new GUI()
 
@@ -277,3 +279,60 @@ const transformControls = new TransformControls(camera, renderer.domElement)
 transformControls.setMode('rotate')
 transformControls
 scene.add(transformControls)
+
+// Task 12
+
+gui
+  .add({ showTask_12_13: false }, 'showTask_12_13')
+  .name('Show task 12-13')
+  .onChange((isShown) => {
+    if (isShown) {
+      scene.add(textGroup)
+      window.addEventListener('click', changeTextColor)
+    } else {
+      scene.remove(textGroup)
+      window.removeEventListener('click', changeTextColor)
+    }
+  })
+
+const textGroup = new THREE.Group()
+const fontLoader = new FontLoader()
+
+fontLoader.load('fonts/gentilis_bold.typeface.json', (font) => {
+  const myText = createText('VitalyA', 1, font, -2, 0xffffff)
+  myText.forEach((symbol) => textGroup.add(symbol))
+})
+
+// Task 13
+
+const raycaster = new THREE.Raycaster()
+const pointer = new THREE.Vector2()
+
+function changeTextColor(event) {
+  pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+
+  raycaster.setFromCamera(pointer, camera)
+  const intersects = raycaster.intersectObjects(textGroup.children, true)
+  if (intersects.length > 0) {
+    const firstObject = intersects[0].object
+    firstObject.material.color.set(Math.random() * 0xffffff)
+  }
+}
+
+function createText(text, letterSpacing, font, startX, color) {
+  let currentPosX = startX
+  return Array.from(text).map((symbol) => {
+    const textGeometry = new TextGeometry(symbol, {
+      font: font,
+      size: 1,
+      height: 0.2,
+      curveSegments: 12,
+    })
+    const textMaterial = new THREE.MeshBasicMaterial({ color: color })
+    const text = new THREE.Mesh(textGeometry, textMaterial)
+    text.translateX(currentPosX)
+    currentPosX += letterSpacing
+    return text
+  })
+}
