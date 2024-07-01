@@ -1,5 +1,8 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import GUI from 'lil-gui'
+
+const gui = new GUI()
 
 const scene = new THREE.Scene()
 
@@ -28,6 +31,17 @@ loader.load(
     console.log('EgorovAgencyCube animations:', gltf.animations)
     scene.add(gltf.scene)
     directionalLight.target = gltf.scene
+
+    gui
+      .add({ showTask_1_2_3: true }, 'showTask_1_2_3')
+      .name('Show task 1-3')
+      .onChange((isShown) => {
+        if (isShown) {
+          scene.add(gltf.scene)
+        } else {
+          scene.remove(gltf.scene)
+        }
+      })
   },
   undefined,
   (err) => {
